@@ -35,6 +35,10 @@ def extract(file):
 
 def format_content(snippet, content):
 
+    # handle gsgui
+    if snippet == "gsgui":
+        content = re.sub(r'(.*\${[\d]+:)\${[\d]+\/.*\/.*\/g}(.*)', r'\1`substitute(Filename(), " ", "", "g")`\2', content)
+
     # handle clipboard
     if snippet == "clipboard":
         content = re.sub(r'\${2:', '', content)
@@ -91,7 +95,6 @@ def format_content(snippet, content):
         # handle choice (choice is not implemented in either neosnippet or snipmate)
         line = re.sub(r'(.*\${[\d]+)(\|.*\|}.*)', r'\1:\2', line)
         # handle substitution (dynamic substitution is not implemented in either neosnippet or snipmate)
-        line = re.sub(r'(.*\${[\d]+):\${[\d]+\/.*\/.*\/g}(.*)', r'\1\2', line)
         line = re.sub(r'\${[\d]+\/.*\/(.*)\/}(\${.*})\${[\d]+\/.*\/(.*)\/}', r'\1\2\3', line)
         # handle indent
         line = re.sub(r'(^[\s]*)(\${\d+:)(\t+)(.*)', r'\1\3\2\4', line)

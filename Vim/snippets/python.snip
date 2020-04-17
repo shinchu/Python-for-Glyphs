@@ -730,7 +730,7 @@ options	indent
 
 	import vanilla
 
-	class ${3}( object ):
+	class ${3:`substitute(Filename(), " ", "", "g")`}( object ):
 		def __init__( self ):
 			# Window 'self.w':
 			windowWidth  = 350
