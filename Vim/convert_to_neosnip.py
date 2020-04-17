@@ -33,7 +33,28 @@ def extract(file):
     return snippet, abbr, content
 
 
+def format_stops(content):
+    try:
+        stops = set([int(x[1:]) for x in re.findall(r'\$[\d]+', content, flags=(re.MULTILINE | re.DOTALL))])
+    except:
+        stops = set()
+
+    try:
+        inputs = set([int(x[2:]) for x in re.findall(r'\${[\d]+', content, flags=(re.MULTILINE | re.DOTALL))])
+    except:
+        inputs = set()
+
+    if len(stops) > 0:
+        for number in stops:
+            if number not in inputs:
+                content = content.replace('${}'.format(number), '${{{}}}'.format(number))
+
+    return content
+
+
 def format_content(snippet, content):
+
+    content = format_stops(content)
 
     # handle gsgui
     if snippet == "gsgui":
@@ -88,14 +109,15 @@ def format_content(snippet, content):
 
     formatted_content = ""
     for line in content.split('\n'):
-        # handle $0
-        line = line.replace('$0', '${0}')
         # handle $TM_FILENAME
         line = re.sub(r'\$TM_FILENAME', r'`Filename()`', line)
         # handle choice (choice is not implemented in either neosnippet or snipmate)
         line = re.sub(r'(.*\${[\d]+)(\|.*\|}.*)', r'\1:\2', line)
         # handle substitution (dynamic substitution is not implemented in either neosnippet or snipmate)
         line = re.sub(r'\${[\d]+\/.*\/(.*)\/}(\${.*})\${[\d]+\/.*\/(.*)\/}', r'\1\2\3', line)
+        # handle nest
+        line = re.sub(r'(\${[\d]+:[^}]*\${[\d]+:.*)(}[^{]*})', r'\1\\\2', line)
+
         # handle indent
         line = re.sub(r'(^[\s]*)(\${\d+:)(\t+)(.*)', r'\1\3\2\4', line)
         if len(line) > 0:

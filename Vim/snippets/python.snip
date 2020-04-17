@@ -9,7 +9,7 @@ options	indent
 snippet	sort
 abbr	py sort
 options	indent
-	sorted( ${1:[ ${2:[l.parent.name, l.bounds.origin.y]} for l in selectedLayers]}, key = lambda thisListItem: ${3:thisListItem[1]} )${0}
+	sorted( ${1:[ ${2:[l.parent.name, l.bounds.origin.y]\} for l in selectedLayers]}, key = lambda thisListItem: ${3:thisListItem[1]} )${0}
 
 
 snippet	center
@@ -38,7 +38,7 @@ options	indent
 snippet	button
 abbr	Glyphs gui button popup
 options	indent
-	self.w.${1:popupButton} = vanilla.PopUpButton( (${2:inset+${3:100}}, linePos, ${4:-inset}, 17), ${5:(u"Option 1", u"Option 2")}, sizeStyle='small', callback=self.SavePreferences )
+	self.w.${1:popupButton} = vanilla.PopUpButton( (${2:inset+${3:100\}}, linePos, ${4:-inset}, 17), ${5:(u"Option 1", u"Option 2")}, sizeStyle='small', callback=self.SavePreferences )
 	${6:linePos += lineHeight}
 	${0}
 
@@ -451,7 +451,7 @@ options	indent
 snippet	text_gui_text_edit
 abbr	Glyphs gui text edit
 options	indent
-	self.w.${1:textEntry} = vanilla.EditText( (${2:inset${3:+80}}, linePos, ${4:-inset}, 19), "${5:insert text here}", callback=self.SavePreferences, sizeStyle='small' )
+	self.w.${1:textEntry} = vanilla.EditText( (${2:inset${3:+80\}}, linePos, ${4:-inset}, 19), "${5:insert text here}", callback=self.SavePreferences, sizeStyle='small' )
 	${6:linePos += lineHeight}
 	${0}
 
@@ -542,8 +542,8 @@ abbr	Glyphs py notification
 options	indent
 	# Floating notification:
 	Glyphs.showNotification( 
-		u"%s$1" % (thisFont.familyName$2),
-		${4:u"${3:Script is finished.}",}
+		u"%s${1}" % (thisFont.familyName${2}),
+		${4:u"${3:Script is finished.\}",}
 		)${0}
 
 
@@ -653,7 +653,7 @@ options	indent
 	# brings macro window to front and clears its log:
 	Glyphs.clearLog()
 	Glyphs.showMacroWindow()
-	${1:print "${2:Output}:"}${0}
+	${1:print "${2:Output\}:"}${0}
 
 
 snippet	log
@@ -665,7 +665,7 @@ options	indent
 snippet	keys
 abbr	py NSEvent Modifier Keys
 options	indent
-	${2:from AppKit import ${1:NSEvent}}
+	${2:from AppKit import ${1:NSEvent\}}
 
 	keysPressed = NSEvent.modifierFlags()
 	${3:optionKey = 524288}
