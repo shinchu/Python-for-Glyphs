@@ -94,8 +94,8 @@ def format_content(snippet, content):
         line = re.sub(r'(.*\${[\d]+):\${[\d]+\/.*\/.*\/g}(.*)', r'\1\2', line)
         line = re.sub(r'\${[\d]+\/.*\/(.*)\/}(\${.*})\${[\d]+\/.*\/(.*)\/}', r'\1\2\3', line)
         # handle indent
-        line = re.sub(r'^[?\s]+(\${\d+:\t+.*)', r'\1', line)
-        if len(line) > 0 or not re.match(r'^.*\${\d+:\t+.*', line):
+        line = re.sub(r'(^[\s]*)(\${\d+:)(\t+)(.*)', r'\1\3\2\4', line)
+        if len(line) > 0:
             line = '\t' + line
         # handle empty line
         line = re.sub(r'^\s*$', r'', line)

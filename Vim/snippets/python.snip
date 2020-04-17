@@ -818,7 +818,7 @@ options	indent
 
 					${0}
 
-	${6:			self.w.close() # delete if you want window to stay open}
+					${6:self.w.close() # delete if you want window to stay open}
 
 				# Final report:
 				Glyphs.showNotification( 
@@ -876,9 +876,9 @@ options	indent
 	for thisLayer in selectedLayers:
 		thisGlyph = thisLayer.parent
 		print("Processing %s" % thisGlyph.name)
-	${7:	thisGlyph.beginUndo() # begin undo grouping}
+		${7:thisGlyph.beginUndo() # begin undo grouping}
 		process( thisLayer )
-	${8:	thisGlyph.endUndo()   # end undo grouping}
+		${8:thisGlyph.endUndo()   # end undo grouping}
 
 	${9:thisFont.enableUpdateInterface() # re-enables UI updates in Font View}
 
