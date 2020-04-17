@@ -8,6 +8,8 @@ These are text editor snippets intended to facilitate Python (both 2 and 3) deve
 
 **Atom:** Since I don’t use Atom, I depend on other people’s pull requests. Hence, the Atom snippets are usually out of date. If you want up-to-date snippets for Atom, feel free to contribute to this repository on a regular basis.
 
+**Vim/NeoVim:** Ported from TextMate snipptes for [neosnippet.vim](https://github.com/Shougo/neosnippet.vim). May also work in [vim-snipmate](https://github.com/garbas/vim-snipmate) with some tweak (haven't tested). Since the parsing script is rather ad-hoc, critical errors may exist. Any contribution is welcome.
+
 ### Snippets
 
 * `gspy⇥` Basic structure of a Glyphs script that iterates through selected layers.
@@ -64,6 +66,25 @@ These are text editor snippets intended to facilitate Python (both 2 and 3) deve
 * TextMate bundle: double click to install
 * Sublime Text: Open *Sublime Text > Preferences > Browse Packages…* and move the `Python for Glyphs.tmbundle` into the folder that appears
 * Atom: move to `~/.atom/packages/python-to-glyphs`
+* Vim/NeoVim:
+	* Install [neosnippet.vim](https://github.com/Shougo/neosnippet.vim) with your favourite plugin manager: `Plug 'Shougo/neosnippet'`
+	* Move the snippet file or make a symbolic link: `ln -s Vim/snippets/python.snip ~/.vim/snippets/python.snip`
+	* Add the following settings to your `.vimrc`
+		```vimrc
+		imap <C-k>     <Plug>(neosnippet_expand_or_jump)
+		smap <C-k>     <Plug>(neosnippet_expand_or_jump)
+		xmap <C-k>     <Plug>(neosnippet_expand_target)
+		let g:neosnippet#snippets_directory = '$HOME/.vim/snippets'
+		let g:neosnippet#enable_snipmate_compatibility = 1
+		let g:neosnippet#conceal_char = '|'
+		if has('conceal')
+		  set conceallevel=2 concealcursor=niv
+		endif
+		autocmd InsertLeave * NeoSnippetClearMarkers
+		snoremap <silent><ESC> <ESC>:NeoSnippetClearMarkers<CR>
+		set completeopt-=preview
+		```
+	* Using with [deoplete.nvim](https://github.com/Shougo/deoplete.nvim) is highly recommended.
 
 ### License
 
