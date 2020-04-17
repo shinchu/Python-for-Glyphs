@@ -70,7 +70,7 @@ These are text editor snippets intended to facilitate Python (both 2 and 3) deve
 	* Install [neosnippet.vim](https://github.com/Shougo/neosnippet.vim) with your favourite plugin manager: `Plug 'Shougo/neosnippet'`
 	* Move the snippet file or make a symbolic link: `ln -s Vim/snippets/python.snip ~/.vim/snippets/python.snip`
 	* Add the following settings to your `.vimrc`
-		```vimrc
+		```vim
 		imap <C-k>     <Plug>(neosnippet_expand_or_jump)
 		smap <C-k>     <Plug>(neosnippet_expand_or_jump)
 		xmap <C-k>     <Plug>(neosnippet_expand_target)
