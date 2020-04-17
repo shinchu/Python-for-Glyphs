@@ -1,0 +1,926 @@
+
+snippet	pref
+abbr	Glyphs gui pref save
+options	indent
+	Glyphs.defaults["com.${1:mekkablue}.${2:mainClassName}.${3:itemName}"] = self.w.$3.get()${0}
+
+
+
+snippet	sort
+abbr	py sort
+options	indent
+	sorted( ${1:[ ${2:[l.parent.name, l.bounds.origin.y]} for l in selectedLayers]}, key = lambda thisListItem: ${3:thisListItem[1]} )${0}
+
+
+snippet	center
+abbr	py center of NSRect
+options	indent
+	${1:from Foundation import NSPoint, NSRect}
+	def centerOfRect(rect):
+		"""
+		Returns the center of NSRect rect as an NSPoint.
+		"""
+		center = NSPoint( rect.origin.x + rect.size.width/2, rect.origin.y + rect.size.height/2 )
+		return center
+	${0}
+
+
+
+snippet	progress
+abbr	Glyphs gui progress bar
+options	indent
+	self.w.progress = vanilla.ProgressBar((inset, linePos, -inset, 16))
+	self.w.progress.set(0) # set progress indicator to zero
+	${1:linePos+=lineHeight}${0}
+
+
+
+snippet	button
+abbr	Glyphs gui button popup
+options	indent
+	self.w.${1:popupButton} = vanilla.PopUpButton( (${2:inset+${3:100}}, linePos, ${4:-inset}, 17), ${5:(u"Option 1", u"Option 2")}, sizeStyle='small', callback=self.SavePreferences )
+	${6:linePos += lineHeight}
+	${0}
+
+
+
+
+snippet	round
+abbr	Glyphs py layer round
+options	indent
+	${1:from Foundation import NSClassFromString}
+
+	def roundLayer( thisLayer, radius, checkSelection=False, visualCorrection=True, respectGrid=False ):
+		roundFilter = NSClassFromString("GlyphsFilterRoundCorner")
+		roundFilter.roundLayer_radius_checkSelection_visualCorrect_grid_(
+			thisLayer, radius,
+			checkSelection,   # if True, only rounds user-selected points
+			visualCorrection, # visual correction of non-perpendicular angles
+			respectGrid       # whether it the resulting path should stick to the grid
+		)
+	${0}
+
+
+snippet	button_gui_button_square
+abbr	Glyphs gui button square
+options	indent
+	self.w.${1:updateButton} = vanilla.SquareButton( (${2:-inset-20}, linePos, ${3:-inset}, 18), u"${4:↺}", sizeStyle='small', callback=self.${5:update} )
+	${6:linePos += lineHeight}
+	${0}
+
+
+
+snippet	terminal
+abbr	py terminal
+options	indent
+	${1:import subprocess}
+	command = '${2:uptime}'
+	commandArgs = ["${3:~/Library/Application Support/Glyphs/Scripts}"] # arguments (may contain spaces) as lists of strings
+	commandExecution = subprocess.Popen( command.split(" ")+commandArgs, stdout=subprocess.PIPE, stderr=subprocess.PIPE )
+	output, error = commandExecution.communicate()
+	${4:print("RETURNCODE (0=OK): %i" % commandExecution.returncode)}
+	if output:
+		${5:print("\nOUTPUT:\n%s" % output)}
+	if error:
+		${6:print("\nERROR:\n%s" % error)}
+	${0}
+
+
+
+snippet	tab
+abbr	Glyphs py tab with text
+options	indent
+	# opens new Edit tab:
+	${1:thisFont}.newTab( ${2:u"abc"} )${0}
+
+
+
+snippet	timer
+abbr	py timer
+options	indent
+	from timeit import default_timer as timer
+
+	def reportTimeInNaturalLanguage( seconds ):
+		if seconds > 60.0:
+			timereport = "%i:%02i minutes" % ( seconds//60, seconds%60 )
+		elif seconds < 1.0:
+			timereport = "%.2f seconds" % seconds
+		elif seconds < 20.0:
+			timereport = "%.1f seconds" % seconds
+		else:
+			timereport = "%i seconds" % seconds
+		return timereport
+
+	${2:# start taking time:}
+	start = timer()
+
+	# take time:
+	end = timer()
+	timereport = reportTimeInNaturalLanguage( end - start )
+	${1:print("Time elapsed: %s." % timereport)}
+	${0}
+
+
+
+snippet	write
+abbr	py write file
+options	indent
+	${1:import codecs}
+	def saveFileInLocation(content="", fileName="test.txt", filePath="~/Desktop"):
+		saveFileLocation = "%s/%s" % (filePath, fileName)
+		saveFileLocation = saveFileLocation.replace( "//", "/" )
+		with codecs.open(saveFileLocation, "w", "utf-8-sig") as thisFile:
+			print("Exporting to:", thisFile.name)
+			thisFile.write( content )
+			thisFile.close()
+		return True
+
+
+
+
+snippet	circle
+abbr	Glyphs py circle
+options	indent
+	from Foundation import NSPoint
+
+	def circlePath( center=NSPoint(0,0), radius=50, bcp=4.0*(2.0**0.5-1.0)/3.0 ):
+		circle = GSPath()
+		x = center.x
+		y = center.y
+		handle = radius*bcp
+		points=(
+			((x+handle, y-radius), (x+radius, y-handle), (x+radius, y)),
+			((x+radius, y+handle), (x+handle, y+radius), (x, y+radius)),
+			((x-handle, y+radius), (x-radius, y+handle), (x-radius, y)),
+			((x-radius, y-handle), (x-handle, y-radius), (x, y-radius))
+		)
+		# Add the segments:
+		for triplet in points:
+			# Add the two BCPs of the segment:
+			bcp1 = NSPoint( triplet[0][0], triplet[0][1] )
+			bcp2 = NSPoint( triplet[1][0], triplet[1][1] )
+			for bcpPosition in (bcp1,bcp2):
+				newBCP = GSNode()
+				newBCP.type = OFFCURVE
+				newBCP.position = bcpPosition
+				circle.nodes.append(newBCP)
+
+			# Add the On-Curve of the segment:
+			newCurvepoint = GSNode()
+			newCurvepoint.type = CURVE
+			newCurvepoint.smooth = True
+			newCurvepoint.position  = NSPoint( triplet[2][0], triplet[2][1] )
+			circle.nodes.append(newCurvepoint)
+
+		circle.closed = True
+		return circle
+	${0}
+
+
+snippet	title
+abbr	Glyphs py menutitle
+options	indent
+	#MenuTitle: ${1:`Filename()`}
+	# -*- coding: utf-8 -*-
+	from __future__ import division, print_function, unicode_literals
+	__doc__="""
+	${2:$1}.
+	"""
+	${0}
+
+
+snippet	measurement
+abbr	Glyphs py measurement
+options	indent
+	def intersectionsBetweenPoints( thisLayer, startPoint, endPoint ):
+		"""
+		Returns list of intersection NSPoints from startPoint to endPoint.
+		thisLayer ... a glyph layer
+		startPoint, endPoint ... NSPoints
+		"""
+
+		# prepare layer copy for measurement:
+		cleanLayer = thisLayer.copyDecomposedLayer()
+		cleanLayer.removeOverlap()
+
+		# measure and return tuple:
+		listOfIntersections = cleanLayer.intersectionsBetweenPoints( startPoint, endPoint )
+		return listOfIntersections
+	${0}
+
+
+snippet	pref_gui_pref_load
+abbr	Glyphs gui pref load
+options	indent
+	self.w.${1:itemName}.set( Glyphs.defaults["com.${2:mekkablue}.${3:mainClassName}.$1"] )${0}
+
+
+snippet	offset
+abbr	Glyphs py layer offset
+options	indent
+	${1:from Foundation import NSClassFromString}
+
+	def offsetLayer( thisLayer, offset, makeStroke=False, position=0.5, autoStroke=False ):
+		offsetFilter = NSClassFromString("GlyphsFilterOffsetCurve")
+		try:
+			# GLYPHS 3:	
+			offsetFilter.offsetLayer_offsetX_offsetY_makeStroke_autoStroke_position_metrics_error_shadow_capStyleStart_capStyleEnd_keepCompatibleOutlines_(
+				thisLayer,
+				offset, offset, # horizontal and vertical offset
+				makeStroke,     # if True, creates a stroke
+				autoStroke,     # if True, distorts resulting shape to vertical metrics
+				position,       # stroke distribution to the left and right, 0.5 = middle
+				None, None, None, 0, 0, False )
+		except:
+			# GLYPHS 2:
+			offsetFilter.offsetLayer_offsetX_offsetY_makeStroke_autoStroke_position_error_shadow_(
+				thisLayer,
+				offset, offset, # horizontal and vertical offset
+				makeStroke,     # if True, creates a stroke
+				autoStroke,     # if True, distorts resulting shape to vertical metrics
+				position,       # stroke distribution to the left and right, 0.5 = middle
+				None, None )
+	${0}
+
+
+snippet	text
+abbr	Glyphs gui text box
+options	indent
+	self.w.${1:descriptionText} = vanilla.TextBox( (${2:inset}, linePos+2, ${3:-$2}, 14), u"${4:Apply function to the font}", sizeStyle='small', selectable=True )
+	${5:linePos += lineHeight}
+	${0}
+
+
+
+snippet	url
+abbr	Glyphs plugin updateFeedURL
+options	indent
+	https://raw.githubusercontent.com/${1:github username}/${2:plugin name}/master/$2.${3:|glyphsReporter,glyphsFilter,glyphsTool,glyphsFileFormat,glyphsPlugin,glyphsPalette|}/Contents/Info.plist${0}
+
+
+snippet	tab_py_tab_with_layers
+abbr	Glyphs py tab with layers
+options	indent
+	# opens new Edit tab:
+	newTab = ${1:thisFont}.newTab()
+	newTab.layers = ${2:$1.selectedLayers}${0}
+
+
+
+snippet	angle
+abbr	Glyphs py angle
+options	indent
+	${1:import math}
+
+	def angle( firstPoint, secondPoint ):
+		"""
+		Returns the angle (in degrees) of the straight line between firstPoint and secondPoint,
+		0 degrees being the second point to the right of first point.
+		firstPoint, secondPoint: must be NSPoint or GSNode
+		"""
+		xDiff = secondPoint.x - firstPoint.x
+		yDiff = secondPoint.y - firstPoint.y
+		return math.degrees(math.atan2(yDiff,xDiff))
+	${0}
+
+
+snippet	clipboard
+abbr	py clipboard
+options	indent
+	${1:from AppKit import NSPasteboard, NSStringPboardType}
+
+	def setClipboard( myText ):
+		"""
+		Sets the contents of the clipboard to myText.
+		Returns True if successful, False if unsuccessful.
+		"""
+		try:
+			myClipboard = NSPasteboard.generalPasteboard()
+			myClipboard.declareTypes_owner_( [NSStringPboardType], None )
+			myClipboard.setString_forType_( myText, NSStringPboardType )
+			return True
+		except Exception as e:
+			return False
+
+	if not setClipboard(${3:"clipboard text"}):
+		print("Warning: could not set clipboard to %s" % ( $3 ))
+	${0}
+
+
+
+snippet	pref_gui_pref_register
+abbr	Glyphs gui pref register
+options	indent
+	Glyphs.registerDefault( "com.${1:mekkablue}.${2:mainClassName}.${3:itemName}", ${4:0} )${0}
+
+
+
+snippet	plugindef
+abbr	Glyphs plugin def
+options	indent
+	def ${1:fname}(`indent(".") ? "self" : ""`):
+		"""${3:docstring for $1}"""
+		try:
+			${0:pass}
+		except Exception as e:
+			self.logToConsole( "$1: %s" % str(e) )
+
+
+
+snippet	rgb
+abbr	py NSColor RGB
+options	indent
+	${1:from AppKit import NSColor}
+	${2:thisColor} = NSColor.colorWithRed_green_blue_alpha_(${3:1.0}, ${4:0.1}, ${5:0.3}, ${6:0.3})${0}
+
+
+snippet	pref_gui_pref_register_ampersand_load
+abbr	Glyphs gui pref register & load
+options	indent
+	Glyphs.registerDefault( "com.${1:mekkablue}.${2:mainClassName}.${3:itemName}", ${4:0} )
+	${5:self.w.$3.set( Glyphs.defaults["com.$1.$2.$3"] )}${0}
+
+
+snippet	msg
+abbr	Glyphs py msg
+options	indent
+	Message(title="${1:Script} Error", message="${2:An error occurred during the execution of the script.}", OKButton=${3:|None,"Apply"|})${0}
+
+
+snippet	intersect
+abbr	py intersect two lines
+options	indent
+	${1:from Foundation import NSPoint}
+
+	def intersect( pointA, pointB, pointC, pointD ):
+		"""
+		Returns an NSPoint of the intersection AB with CD,
+		or None if there is no intersection.
+		pointA, pointB: NSPoints or GSNodes representing the first line AB,
+		pointC, pointD: NSPoints or GSNodes representing the second line CD.
+		"""
+		xA, yA = pointA.x, pointA.y
+		xB, yB = pointB.x, pointB.y
+		xC, yC = pointC.x, pointC.y
+		xD, yD = pointD.x, pointD.y
+
+		try:
+			slopeAB = ( float(yB) - float(yA) ) / ( float(xB) - float(xA) )
+		except:
+			slopeAB = None # division by zero if vertical
+
+		try:
+			slopeCD = ( float(yD) - float(yC) ) / ( float(xD) - float(xC) )
+		except:
+			slopeCD = None # division by zero if vertical
+
+		if slopeAB == slopeCD: # parallel, no intersection
+			return None
+		elif slopeAB is None: # first line is vertical
+			x = xA
+			y = slopeCD * ( x - xC ) + yC
+		elif slopeCD is None: # second line is vertical
+			x = xC
+			y = slopeAB * ( x - xA ) + yA
+		else: # both lines have different angles other than vertical
+			x = ( slopeAB * xA - yA - slopeCD * xC + yC ) / ( slopeAB - slopeCD )
+			y = slopeAB * ( x - xA ) + yA
+
+		return NSPoint( x, y )
+	${0}
+
+
+
+snippet	gspy
+abbr	Glyphs py report
+options	indent
+	#MenuTitle: ${1:`Filename()`}
+	# -*- coding: utf-8 -*-
+	from __future__ import division, print_function, unicode_literals
+	__doc__="""
+	Opens a new Edit tab containing all glyphs ${2:exceeding the ascender height.}
+	"""
+
+	def isLayerAffected( thisLayer ):
+		ascender = thisLayer.master.ascender
+		for thisPath in thisLayer.paths:
+			for thisNode in thisPath.nodes:
+				if thisNode.y > ascender:
+					return True${0}
+		return False
+
+	Glyphs.clearLog() # clears log of Macro window
+	thisFont = Glyphs.font # frontmost font
+	affectedLayers = []
+	for thisGlyph in thisFont.glyphs: # loop through all glyphs
+		for thisLayer in thisGlyph.layers: # loop through all layers
+			print("Analysing %s" % thisGlyph.name) # report status in Macro window
+			# collect affected layers:
+			if isLayerAffected( thisLayer ): 
+				affectedLayers.append(thisLayer)
+
+	# open a new tab with the affected layers:
+	if affectedLayers:
+		newTab = thisFont.newTab()
+		newTab.layers = affectedLayers
+	# otherwise send a message:
+	else:
+		Message(
+			title = "Nothing Found",
+			message = "Could not find any glyphs $2",
+			OKButton = None
+		)
+
+
+
+
+snippet	vanilla
+abbr	vanilla help
+options	indent
+	import vanilla
+	help(vanilla.${1:|ActionButton,Box,Button,CheckBox,CheckBoxListCell,ColorWell,ComboBox,DatePicker,Drawer,EditText,FloatingWindow,GradientButton,Group,HUDFloatingWindow,HelpButton,HorizontalLine,ImageButton,ImageListCell,ImageView,LevelIndicator,LevelIndicatorListCell,List,ObjectBrowser,PathControl,PopUpButton,PopUpButtonListCell,Popover,ProgressBar,ProgressSpinner,RadioGroup,ScrollView,SearchBox,SecureEditText,SegmentedButton,SegmentedButtonListCell,Sheet,Slider,SliderListCell,SplitView,SplitView2,SquareButton,Tabs,TextBox,TextEditor,VanillaBaseControl,VanillaBaseObject,VanillaError,VerticalLine,Window|})
+	${0}
+
+
+snippet	clear
+abbr	Glyphs py clear log
+options	indent
+	Glyphs.clearLog() # clears macro window log${0}
+
+
+snippet	text_gui_text_edit
+abbr	Glyphs gui text edit
+options	indent
+	self.w.${1:textEntry} = vanilla.EditText( (${2:inset${3:+80}}, linePos, ${4:-inset}, 19), "${5:insert text here}", callback=self.SavePreferences, sizeStyle='small' )
+	${6:linePos += lineHeight}
+	${0}
+
+
+
+
+snippet	random
+abbr	py random
+options	indent
+	import random
+	random.seed()
+	${1:randomNumber = random.randint( -100, 100 )}
+	${0}
+
+
+
+snippet	transform
+abbr	Glyphs py transform
+options	indent
+	${1:import math}
+	${2:from AppKit import NSAffineTransform, NSAffineTransformStruct}
+
+	def transform(shiftX=0.0, shiftY=0.0, rotate=0.0, skew=0.0, scale=1.0):
+		"""
+		Returns an NSAffineTransform object for transforming layers.
+		Apply an NSAffineTransform t object like this:
+			Layer.transform_checkForSelection_doComponents_(t,False,True)
+		Access its transformation matrix like this:
+			tMatrix = t.transformStruct() # returns the 6-float tuple
+		Apply the matrix tuple like this:
+			Layer.applyTransform(tMatrix)
+			Component.applyTransform(tMatrix)
+			Path.applyTransform(tMatrix)
+		Chain multiple NSAffineTransform objects t1, t2 like this:
+			t1.appendTransform_(t2)
+		"""
+		myTransform = NSAffineTransform.transform()
+		if rotate:
+			myTransform.rotateByDegrees_(rotate)
+		if scale != 1.0:
+			myTransform.scaleBy_(scale)
+		if not (shiftX == 0.0 and shiftY == 0.0):
+			myTransform.translateXBy_yBy_(shiftX,shiftY)
+		if skew:
+			skewStruct = NSAffineTransformStruct()
+			skewStruct.m11 = 1.0
+			skewStruct.m22 = 1.0
+			skewStruct.m21 = math.tan(math.radians(skew))
+			skewTransform = NSAffineTransform.transform()
+			skewTransform.setTransformStruct_(skewStruct)
+			myTransform.appendTransform_(skewTransform)
+		return myTransform
+	${0}
+
+
+
+snippet	intersect_py_path_intersect
+abbr	Glyphs py path intersect
+options	indent
+	paths = ${1:[Layer.paths[2]]} # list of original paths
+	intersectPaths = ${2:[Layer.paths[0], Layer.paths[1]]} # list of paths to be intersected with original paths
+	pathOperator = GSPathOperator.alloc().init() # needs to be initialized only once
+	pathOperator.intersectPaths_from_error_(intersectPaths, paths, None)
+	${3:thisLayer.paths} = paths # result of boolean operation is in paths
+	${0}
+
+
+snippet	distance
+abbr	Glyphs py distance
+options	indent
+	${1:import math}
+
+	def distance( node1, node2 ):
+		return math.hypot( node1.x - node2.x, node1.y - node2.y )
+	${0}
+
+
+snippet	trace
+abbr	py traceback
+options	indent
+	${1:import traceback}
+	print(traceback.format_exc())${0}
+
+
+
+snippet	notification
+abbr	Glyphs py notification
+options	indent
+	# Floating notification:
+	Glyphs.showNotification( 
+		u"%s$1" % (thisFont.familyName$2),
+		${4:u"${3:Script is finished.}",}
+		)${0}
+
+
+
+snippet	url_plugin_productpageurl
+abbr	Glyphs plugin productPageURL
+options	indent
+	https://github.com/${1:github username}/${2:plugin name}${0}
+
+
+snippet	select
+abbr	Glyphs py select
+options	indent
+	${1:from Foundation import NSMutableArray}
+
+	# selects items on thisLayer:
+	itemsToBeSelected = NSMutableArray.arrayWithObject_( ${2:myObjects} )
+	${3:thisLayer}.setSelection_( itemsToBeSelected )
+	${0}
+
+
+snippet	otfeature
+abbr	Glyphs py create ot feature
+options	indent
+	def updatedCode( oldCode, beginSig, endSig, newCode ):
+		"""Replaces text in oldCode with newCode, but only between beginSig and endSig."""
+		beginOffset = oldCode.find( beginSig )
+		endOffset   = oldCode.find( endSig ) + len( endSig )
+		newCode = oldCode[:beginOffset] + beginSig + newCode + "\n" + endSig + oldCode[endOffset:]
+		return newCode
+
+	def createOTFeature( featureName = "calt", 
+	                     featureCode = "# empty feature code", 
+	                     targetFont  = Glyphs.font,
+	                     codeSig     = "CUSTOM-CONTEXTUAL-ALTERNATES" ):
+		"""
+		Creates or updates an OpenType feature in the font.
+		Returns a status message in form of a string.
+		featureName: name of the feature (str),
+		featureCode: the AFDKO feature code (str),
+		targetFont: the GSFont object receiving the feature,
+		codeSig: the code signature (str) used as delimiters.
+		"""
+
+		beginSig = "# BEGIN " + codeSig + "\n"
+		endSig   = "# END "   + codeSig + "\n"
+
+		if featureName in [ f.name for f in targetFont.features ]:
+			# feature already exists:
+			targetFeature = targetFont.features[ featureName ]
+
+			if beginSig in targetFeature.code:
+				# replace old code with new code:
+				targetFeature.code = updatedCode( targetFeature.code, beginSig, endSig, featureCode )
+			else:
+				# append new code:
+				targetFeature.code += "\n" + beginSig + featureCode + "\n" + endSig
+
+			return "Updated existing OT feature '%s'." % featureName
+		else:
+			# create feature with new code:
+			newFeature = GSFeature()
+			newFeature.name = featureName
+			newFeature.code = beginSig + featureCode + "\n" + endSig
+			targetFont.features.append( newFeature )
+			return "Created new OT feature '%s'" % featureName
+
+	${0}
+
+
+snippet	otclass
+abbr	Glyphs py create ot class
+options	indent
+	def createOTClass( className   = "@default", 
+	                   classGlyphs = [ l.parent.name for l in Glyphs.font.selectedLayers ], 
+	                   targetFont  = Glyphs.font ):
+		"""
+		Creates an OpenType class called className in targetFont 
+		containg classGlyphs, or updates it if it already exists.
+		className: name of the OT class, with or without leading at sign,
+		classGlyphs: list of glyph names,
+		targetFont: the GSFont that receives the OT class.
+		"""
+
+		# strip '@' from beginning:
+		if className[0] == "@":
+			className = className[1:]
+
+		classCode = " ".join( classGlyphs )
+
+		if className in [ c.name for c in targetFont.classes ]:
+			targetFont.classes[className].code = classCode
+			return "Updated existing OT class '%s'." % className
+		else:
+			newClass = GSClass()
+			newClass.name = className
+			newClass.code = classCode
+			targetFont.classes.append( newClass )
+			return "Created new OT class: '%s'" % className
+
+	${0}
+
+
+snippet	macro
+abbr	Glyphs py macro window
+options	indent
+	# brings macro window to front and clears its log:
+	Glyphs.clearLog()
+	Glyphs.showMacroWindow()
+	${1:print "${2:Output}:"}${0}
+
+
+snippet	log
+abbr	Glyphs plugin log
+options	indent
+	self.logToConsole( "${1:method name}: %s" % str(e) )${0}
+
+
+snippet	keys
+abbr	py NSEvent Modifier Keys
+options	indent
+	${2:from AppKit import ${1:NSEvent}}
+
+	keysPressed = NSEvent.modifierFlags()
+	${3:optionKey = 524288}
+	${5:commandKey = 1048576}
+	${7:ctrlKey = 262144}
+	${9:fnKey = 8388608}
+	${11:shiftKey = 131072}
+	${4:optionKeyPressed = keysPressed & optionKey == optionKey}
+	${6:commandKeyPressed = keysPressed & commandKey == commandKey}
+	${8:ctrlKeyPressed = keysPressed & ctrlKey == ctrlKey}
+	${10:fnKeyPressed = keysPressed & fnKey == fnKey}
+	${12:shiftKeyPressed = keysPressed & shiftKey == shiftKey}
+	${0}
+
+
+
+snippet	subtract
+abbr	Glyphs py path subtract
+options	indent
+	paths = ${1:[Layer.paths[2]]} # list of original paths
+	subtractPaths = ${2:[Layer.paths[0], Layer.paths[1]]} # list of paths to be subtracted from original paths
+	pathOperator = GSPathOperator.alloc().init() # needs to be initialized only once
+	pathOperator.subtractPaths_from_error_debug_(subtractPaths, paths, None, False)
+	${3:thisLayer.paths} = paths # result of boolean operation is in paths
+	${0}
+
+
+snippet	checkbox
+abbr	Glyphs gui checkbox
+options	indent
+	self.w.${1:myCheckBox} = vanilla.CheckBox( (${2:inset}, ${3:linePos-1}, ${4:-$2}, 20), u"${5:Activate option}", value=${6:|False,True|}, callback=self.SavePreferences, sizeStyle='small' )
+	${7:linePos += lineHeight}
+	${0}
+
+
+
+snippet	bezier
+abbr	py bezier
+options	indent
+	def bezier( x1,y1,  x2,y2,  x3,y3,  x4,y4,  t ):
+		"""
+		Returns coordinates for t (=0.0...1.0) on curve segment.
+		x1,y1 and x4,y4: coordinates of on-curve nodes
+		x2,y2 and x3,y3: coordinates of BCPs
+		"""
+		x = x1*(1-t)**3 + x2*3*t*(1-t)**2 + x3*3*t**2*(1-t) + x4*t**3
+		y = y1*(1-t)**3 + y2*3*t*(1-t)**2 + y3*3*t**2*(1-t) + y4*t**3
+
+		return x, y
+
+
+
+snippet	gsgui
+abbr	Glyphs gui
+options	indent
+	#MenuTitle: ${1:`Filename()`}
+	# -*- coding: utf-8 -*-
+	from __future__ import division, print_function, unicode_literals
+	__doc__="""
+	${2:Create effect for selected glyphs.}
+	"""
+
+	import vanilla
+
+	class ${3}( object ):
+		def __init__( self ):
+			# Window 'self.w':
+			windowWidth  = 350
+			windowHeight = 260
+			windowWidthResize  = 100 # user can resize width by this value
+			windowHeightResize = 0   # user can resize height by this value
+			self.w = vanilla.FloatingWindow(
+				( windowWidth, windowHeight ), # default window size
+				"$1", # window title
+				minSize = ( windowWidth, windowHeight ), # minimum size (for resizing)
+				maxSize = ( windowWidth + windowWidthResize, windowHeight + windowHeightResize ), # maximum size (for resizing)
+				autosaveName = "com.${4:mekkablue}.$3.mainwindow" # stores last window position and size
+			)
+
+			# UI elements:
+			linePos, inset, lineHeight = 12, 15, 22
+			self.w.text_1 = vanilla.TextBox( (inset-1, linePos+2, 75, 14), "inset", sizeStyle='small' )
+			self.w.popup_1 = vanilla.PopUpButton( (inset+80, linePos, 50, 17), [str(x) for x in range( 3, 12 )], callback=self.SavePreferences, sizeStyle='small' )
+			self.w.edit_1 = vanilla.EditText( (inset+80+55, linePos, -inset, 19), "insert text here", sizeStyle='small', callback=self.SavePreferences)
+			linePos += lineHeight
+
+			# Run Button:
+			self.w.runButton = vanilla.Button( (-80-inset, -20-inset, -inset, -inset), "Run", sizeStyle='regular', callback=self.$5 )
+			self.w.setDefaultButton( self.w.runButton )
+
+			# Load Settings:
+			if not self.LoadPreferences():
+				print("Note: '$1' could not load preferences. Will resort to defaults")
+
+			# Open window and focus on it:
+			self.w.open()
+			self.w.makeKey()
+
+		def SavePreferences( self, sender=None ):
+			try:
+				# write current settings into prefs:
+				Glyphs.defaults["com.$4.$3.popup_1"] = self.w.popup_1.get()
+				return True
+			except:
+				import traceback
+				print(traceback.format_exc())
+				return False
+
+		def LoadPreferences( self ):
+			try:
+				# register defaults:
+				Glyphs.registerDefault("com.$4.$3.popup_1", 0)
+
+				# load previously written prefs:
+				self.w.popup_1.set( Glyphs.defaults["com.$4.$3.popup_1"] )
+				return True
+			except:
+				import traceback
+				print(traceback.format_exc())
+				return False
+
+		def ${5:$3Main}( self, sender=None ):
+			try:
+				# clear macro window log:
+				Glyphs.clearLog()
+
+				# update settings to the latest user input:
+				if not self.SavePreferences():
+					print("Note: '$1' could not write preferences.")
+
+				thisFont = Glyphs.font # frontmost font
+				if thisFont is None:
+					Message(title="No Font Open", message="The script requires a font. Open a font and run the script again.", OKButton=None)
+				else:
+					print("$1 Report for %s" % thisFont.familyName)
+					if thisFont.filepath:
+						print(thisFont.filepath)
+					else:
+						print("⚠️ The font file has not been saved yet.")
+					print()
+
+					${7:listOfSelectedLayers = thisFont.selectedLayers # active layers of currently selected glyphs}
+					for thisLayer in listOfSelectedLayers: # loop through layers
+						thisGlyph = thisLayer.parent
+						print(thisGlyph.name, thisLayer.name)
+						# output all node coordinates:
+						for thisPath in thisLayer.paths:
+							for thisNode in thisLayer.nodes:
+								print("-- %.1f %.1f" % ( thisNode.x, thisNode.y ))
+
+					${0}
+
+	${6:			self.w.close() # delete if you want window to stay open}
+
+				# Final report:
+				Glyphs.showNotification( 
+					u"%s: Done" % (thisFont.familyName),
+					u"$1 is finished. Details in Macro Window",
+					)
+				print("\nDone.")
+
+			except Exception as e:
+				# brings macro window to front and reports error:
+				Glyphs.showMacroWindow()
+				print("$1 Error: %s" % e)
+				import traceback
+				print(traceback.format_exc())
+
+	$3()
+
+
+
+snippet	gspy_py
+abbr	Glyphs py
+options	indent
+	#MenuTitle: ${1:`Filename()`}
+	# -*- coding: utf-8 -*-
+	from __future__ import division, print_function, unicode_literals
+	__doc__="""
+	${2:Create effect for selected glyphs.}
+	"""
+	${3:}
+	import random
+	random.seed()
+
+	def process( thisLayer ):
+		for thisPath in thisLayer.paths:
+			if thisPath.closed:
+				print("- closed path:")
+			else:
+				print("- open path:")
+			for thisNode in thisPath.nodes:
+				print("-- node %.1f %.1f (type %s)" % ( thisNode.x, thisNode.y, thisNode.type ))
+		for thisComponent in thisLayer.components:
+			print("- component %s at %.1f %.1f" % ( thisComponent.componentName, thisComponent.position.x, thisComponent.position.y ))
+		for thisAnchor in thisLayer.anchors:
+			print("- anchor %s at %.1f %.1f" % ( thisAnchor.name, thisAnchor.x, thisAnchor.y ))
+		${0}
+
+	thisFont = Glyphs.font # frontmost font
+	${4:thisFontMaster = thisFont.selectedFontMaster # active master}
+	selectedLayers = thisFont.selectedLayers # active layers of selected glyphs
+	${5:selection = selectedLayers[0].selection # node selection in edit mode}
+	Glyphs.clearLog() # clears log in Macro window
+
+	${6:thisFont.disableUpdateInterface() # suppresses UI updates in Font View}
+
+	for thisLayer in selectedLayers:
+		thisGlyph = thisLayer.parent
+		print("Processing %s" % thisGlyph.name)
+	${7:	thisGlyph.beginUndo() # begin undo grouping}
+		process( thisLayer )
+	${8:	thisGlyph.endUndo()   # end undo grouping}
+
+	${9:thisFont.enableUpdateInterface() # re-enables UI updates in Font View}
+
+
+
+
+
+snippet	italic
+abbr	Glyphs py italic
+options	indent
+	${1:import math}
+	${2:from Foundation import NSPoint}
+
+	def italicize( thisPoint, italicAngle=0.0, pivotalY=0.0 ):
+		"""
+		Returns the italicized position of an NSPoint 'thisPoint'
+		for a given angle 'italicAngle' and the pivotal height 'pivotalY',
+		around which the italic slanting is executed, usually half x-height.
+		Usage: myPoint = italicize(myPoint,10,xHeight*0.5)
+		"""
+		x = thisPoint.x
+		yOffset = thisPoint.y - pivotalY # calculate vertical offset
+		italicAngle = math.radians( italicAngle ) # convert to radians
+		tangens = math.tan( italicAngle ) # math.tan needs radians
+		horizontalDeviance = tangens * yOffset # vertical distance from pivotal point
+		x += horizontalDeviance # x of point that is yOffset from pivotal point
+		return NSPoint( x, thisPoint.y )
+	${0}
+
+
+snippet	tooltip
+abbr	Glyphs gui tooltip
+options	indent
+	self.w.${1:element}.getNS${2:|TextField,Button,ComboBox,PopUpButton,ProgressIndicator,Slider,Window,Box,ColorWell,DatePicker,Drawer,ImageView,LevelIndicator,Matrix,OutlineView,ScrollView,SearchField,SecureTextField,SegmentedButton,SplitView,TableView,TabView,View,TextView,VisualEffectView,WindowController|}().setToolTip_(u"${3:Tooltip text}.")${0}
+
+
+snippet	radio
+abbr	Glyphs gui radiobuttons
+options	indent
+	radioOptions = ( ${1:u"Option 1", u"Option 2", u"Option 3"} )
+	self.w.${2:radioButtons} = vanilla.RadioGroup( (inset${3:*2}, linePos, -inset, lineHeight*len(radioOptions) ), radioOptions, callback=self.SavePreferences, sizeStyle = 'small' )
+	self.w.$2.set( 0 )
+	${4:linePos += lineHeight*len(radioOptions)}${0}
+
+
