@@ -75,6 +75,8 @@ These are text editor snippets intended to facilitate Python (both 2 and 3) deve
 		smap <C-k>     <Plug>(neosnippet_expand_or_jump)
 		xmap <C-k>     <Plug>(neosnippet_expand_target)
 		let g:neosnippet#snippets_directory = '$HOME/.vim/snippets'
+		let g:neosnippet#scope_aliases = {}
+		let g:neosnippet#scope_aliases['python'] = 'glyphs'
 		let g:neosnippet#enable_snipmate_compatibility = 1
 		let g:neosnippet#conceal_char = '|'
 		if has('conceal')

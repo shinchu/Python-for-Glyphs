@@ -142,7 +142,7 @@ def main():
         {}
     """)
 
-    neosnip = path.join(vim_dir, 'python.snip')
+    neosnip = path.join(vim_dir, 'glyphs.snip')
     try:
         open(neosnip, 'w').close()
     except Exception as e:
