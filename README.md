@@ -68,7 +68,7 @@ These are text editor snippets intended to facilitate Python (both 2 and 3) deve
 * Atom: move to `~/.atom/packages/python-to-glyphs`
 * Vim/NeoVim:
 	* Install [neosnippet.vim](https://github.com/Shougo/neosnippet.vim) with your favourite plugin manager: `Plug 'Shougo/neosnippet'`
-	* Move the snippet file or make a symbolic link: `ln -s Vim/snippets/python.snip ~/.vim/snippets/python.snip`
+	* Move the snippet file or make a symbolic link: `ln -s Vim/snippets/glyphs.snip ~/.vim/snippets/glyphs.snip`
 	* Add the following settings to your `.vimrc`
 		```vim
 		imap <C-k>     <Plug>(neosnippet_expand_or_jump)
