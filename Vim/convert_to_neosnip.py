@@ -111,6 +111,8 @@ def format_content(snippet, content):
     for line in content.split('\n'):
         # handle $TM_FILENAME
         line = re.sub(r'\$TM_FILENAME', r'`Filename()`', line)
+        # handle $TM_SELECTED_TEXT
+        line = re.sub(r'\$TM_SELECTED_TEXT', 'TARGET', line)
         # handle choice (choice is not implemented in either neosnippet or snipmate)
         line = re.sub(r'(.*\${[\d]+)(\|.*\|}.*)', r'\1:\2', line)
         # handle substitution (dynamic substitution is not implemented in either neosnippet or snipmate)

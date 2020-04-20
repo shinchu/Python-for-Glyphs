@@ -318,6 +318,7 @@ options	indent
 snippet	plugindef
 abbr	Glyphs plugin def
 options	indent
+	@objc.python_method
 	def ${1:fname}(`indent(".") ? "self" : ""`):
 		"""${3:docstring for $1}"""
 		try:
@@ -345,6 +346,18 @@ snippet	msg
 abbr	Glyphs py msg
 options	indent
 	Message(title="${1:Script} Error", message="${2:An error occurred during the execution of the script.}", OKButton=${3:|None,"Apply"|})${0}
+
+
+snippet	g23
+abbr	Glyphs2/3 try/except
+options	indent
+	try:
+		# GLYPHS 3
+		${1:TARGET}
+	except:
+		# GLYPHS 2
+		${2:TARGET}
+	${0}
 
 
 snippet	intersect
@@ -519,6 +532,13 @@ options	indent
 	${0}
 
 
+snippet	fut
+abbr	py future imports
+options	indent
+	from __future__ import division, print_function, unicode_literals
+	${0}
+
+
 snippet	distance
 abbr	Glyphs py distance
 options	indent
@@ -546,6 +566,12 @@ options	indent
 		${4:u"${3:Script is finished.\}",}
 		)${0}
 
+
+
+snippet	dec
+abbr	PyObjC Decorators
+options	indent
+	${1:|@objc.python_method,@IBAction,@IBOutlet|}${0}
 
 
 snippet	url_plugin_productpageurl
