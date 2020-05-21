@@ -1,4 +1,23 @@
 
+snippet	cond
+abbr	Glyphs plugin conditions for drawing
+options	indent
+	@objc.python_method
+	def conditionsAreMetForDrawing(self):
+		"""
+		Don't activate if text or pan (hand) tool are active.
+		"""
+		currentController = self.controller.view().window().windowController()
+		if currentController:
+			tool = currentController.toolDrawDelegate()
+			textToolIsActive = tool.isKindOfClass_( NSClassFromString("GlyphsToolText") )
+			handToolIsActive = tool.isKindOfClass_( NSClassFromString("GlyphsToolHand") )
+			if not textToolIsActive and not handToolIsActive: 
+				return True
+		return False
+	${0}
+
+
 snippet	pref
 abbr	Glyphs gui pref save
 options	indent
@@ -38,7 +57,7 @@ options	indent
 snippet	button
 abbr	Glyphs gui button popup
 options	indent
-	self.w.${1:popupButton} = vanilla.PopUpButton( (${2:inset+${3:100\}}, linePos, ${4:-inset}, 17), ${5:(u"Option 1", u"Option 2")}, sizeStyle='small', callback=self.SavePreferences )
+	self.w.${1:popupButton} = vanilla.PopUpButton( (${2:inset+${3:100\}}, linePos, ${4:-inset}, 17), ${5:("Option 1", "Option 2")}, sizeStyle='small', callback=self.SavePreferences )
 	${6:linePos += lineHeight}
 	${0}
 
@@ -64,7 +83,7 @@ options	indent
 snippet	button_gui_button_square
 abbr	Glyphs gui button square
 options	indent
-	self.w.${1:updateButton} = vanilla.SquareButton( (${2:-inset-20}, linePos, ${3:-inset}, 18), u"${4:↺}", sizeStyle='small', callback=self.${5:update} )
+	self.w.${1:updateButton} = vanilla.SquareButton( (${2:-inset-20}, linePos, ${3:-inset}, 18), "${4:↺}", sizeStyle='small', callback=self.${5:update} )
 	${6:linePos += lineHeight}
 	${0}
 
@@ -91,7 +110,7 @@ snippet	tab
 abbr	Glyphs py tab with text
 options	indent
 	# opens new Edit tab:
-	${1:thisFont}.newTab( ${2:u"abc"} )${0}
+	${1:thisFont}.newTab( ${2:"abc"} )${0}
 
 
 
@@ -246,7 +265,7 @@ options	indent
 snippet	text
 abbr	Glyphs gui text box
 options	indent
-	self.w.${1:descriptionText} = vanilla.TextBox( (${2:inset}, linePos+2, ${3:-$2}, 14), u"${4:Apply function to the font}", sizeStyle='small', selectable=True )
+	self.w.${1:descriptionText} = vanilla.TextBox( (${2:inset}, linePos+2, ${3:-$2}, 14), "${4:Apply function to the font}", sizeStyle='small', selectable=True )
 	${5:linePos += lineHeight}
 	${0}
 
@@ -562,8 +581,8 @@ abbr	Glyphs py notification
 options	indent
 	# Floating notification:
 	Glyphs.showNotification( 
-		u"%s${1}" % (thisFont.familyName${2}),
-		${4:u"${3:Script is finished.\}",}
+		"%s${1}" % (thisFont.familyName${2}),
+		${4:"${3:Script is finished.\}",}
 		)${0}
 
 
@@ -722,7 +741,7 @@ options	indent
 snippet	checkbox
 abbr	Glyphs gui checkbox
 options	indent
-	self.w.${1:myCheckBox} = vanilla.CheckBox( (${2:inset}, ${3:linePos-1}, ${4:-$2}, 20), u"${5:Activate option}", value=${6:|False,True|}, callback=self.SavePreferences, sizeStyle='small' )
+	self.w.${1:myCheckBox} = vanilla.CheckBox( (${2:inset}, ${3:linePos-1}, ${4:-$2}, 20), "${5:Activate option}", value=${6:|False,True|}, callback=self.SavePreferences, sizeStyle='small' )
 	${7:linePos += lineHeight}
 	${0}
 
@@ -848,8 +867,8 @@ options	indent
 
 				# Final report:
 				Glyphs.showNotification( 
-					u"%s: Done" % (thisFont.familyName),
-					u"$1 is finished. Details in Macro Window",
+					"%s: Done" % (thisFont.familyName),
+					"$1 is finished. Details in Macro Window",
 					)
 				print("\nDone.")
 
@@ -861,6 +880,14 @@ options	indent
 				print(traceback.format_exc())
 
 	$3()
+
+
+
+snippet	key
+abbr	Glyphs plugin keyboard shortcut
+options	indent
+	self.keyboardShortcut = '${1}'
+	self.keyboardShortcutModifier = ${2:NSShiftKeyMask | }${3:NSControlKeyMask | }${4:NSAlternateKeyMask | }${5:NSCommandKeyMask}${0}
 
 
 
@@ -938,13 +965,13 @@ options	indent
 snippet	tooltip
 abbr	Glyphs gui tooltip
 options	indent
-	self.w.${1:element}.getNS${2:|TextField,Button,ComboBox,PopUpButton,ProgressIndicator,Slider,Window,Box,ColorWell,DatePicker,Drawer,ImageView,LevelIndicator,Matrix,OutlineView,ScrollView,SearchField,SecureTextField,SegmentedButton,SplitView,TableView,TabView,View,TextView,VisualEffectView,WindowController|}().setToolTip_(u"${3:Tooltip text}.")${0}
+	self.w.${1:element}.getNS${2:|TextField,Button,ComboBox,PopUpButton,ProgressIndicator,Slider,Window,Box,ColorWell,DatePicker,Drawer,ImageView,LevelIndicator,Matrix,OutlineView,ScrollView,SearchField,SecureTextField,SegmentedButton,SplitView,TableView,TabView,View,TextView,VisualEffectView,WindowController|}().setToolTip_("${3:Tooltip text}.")${0}
 
 
 snippet	radio
 abbr	Glyphs gui radiobuttons
 options	indent
-	radioOptions = ( ${1:u"Option 1", u"Option 2", u"Option 3"} )
+	radioOptions = ( ${1:"Option 1", "Option 2", "Option 3"} )
 	self.w.${2:radioButtons} = vanilla.RadioGroup( (inset${3:*2}, linePos, -inset, lineHeight*len(radioOptions) ), radioOptions, callback=self.SavePreferences, sizeStyle = 'small' )
 	self.w.$2.set( 0 )
 	${4:linePos += lineHeight*len(radioOptions)}${0}
